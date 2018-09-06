@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 3.1.0)
 project(seeta_facedet_lib)
 
 # Build options
-option(BUILD_EXAMPLES  "Set to ON to build examples"  OFF)
-option(USE_OPENMP      "Set to ON to build use openmp"  OFF)
-option(USE_SSE         "Set to ON to build use SSE"  OFF)
+option(BUILD_EXAMPLES  "Set to ON to build examples"  ON)
+option(USE_OPENMP      "Set to ON to build use openmp"  ON)
+option(USE_SSE         "Set to ON to build use SSE"  ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mfpu=neon -mtune=cortex-a7")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 # Use C++11
 set(CMAKE_CXX_STANDARD 11)
@@ -22,7 +22,7 @@ if (USE_SSE)
 endif()
 
 # Use OpenMP
-#if (USE_OPENMP)
+if (USE_OPENMP)
     find_package(OpenMP QUIET)
     if (OPENMP_FOUND)
         message(STATUS "Use OpenMP")
@@ -49,15 +49,13 @@ set(src_files
     src/fust.cpp
     )
 
-#SET(CMAKE_CXX_FLAGS "-O2 -pipe -fPIC -Wall -fmessage-length=0")  
-
 # Build shared library
-add_library(seeta_facedet_lib_s STATIC ${src_files})
+add_library(seeta_facedet_lib SHARED ${src_files})
+set(facedet_required_libs seeta_facedet_lib)
 
 # Build examples
 if (BUILD_EXAMPLES)
     message(STATUS "Build with examples.")
-    set(facedet_required_libs seeta_facedet_lib)
     find_package(OpenCV)
     if (NOT OpenCV_FOUND)
         message(WARNING "OpenCV not found. Test will not be built.")
@@ -68,10 +66,4 @@ if (BUILD_EXAMPLES)
         add_executable(facedet_test src/test/facedetection_test.cpp)
         target_link_libraries(facedet_test ${facedet_required_libs})
     endif()
-    message(${OpenCV_INSTALL_PATH})
 endif()
-
-#set(CMAKE_INSTALL_PREFIX ../..)
-#install(TARGETS seeta_facedet_lib_s DESTINATION _build)
-#install(TARGETS seeta_facedet_lib_s DESTINATION ../_lib)
-
