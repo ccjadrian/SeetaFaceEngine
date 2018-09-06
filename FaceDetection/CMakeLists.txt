@@ -22,7 +22,7 @@ if (USE_SSE)
 endif()
 
 # Use OpenMP
-#if (USE_OPENMP)
+if (USE_OPENMP)
     find_package(OpenMP QUIET)
     if (OPENMP_FOUND)
         message(STATUS "Use OpenMP")
